@@ -21,7 +21,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use("/processed", express.static(path.join(__dirname, "processed")));
 
 app.use(cors());
-app.use("/", imageCompressorRoute);
+app.use("/api/image-compressor", imageCompressorRoute);
 app.get("/", (req, res) => {
   res.status(200).send("Image Tools API");
 });
