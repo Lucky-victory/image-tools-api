@@ -1,14 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
-import formidable, { File as FormidableFile, Fields, Files } from "formidable";
-import sharp from "sharp";
-import fs from "fs/promises";
 import path from "path";
-import { v4 as uuid } from "uuid";
-import { generateImageUrl } from "./utils"; // Adjust the import path
 import cors from "cors";
 const app = express();
 export const PORT = process.env.PORT || 4300;
 import imageCompressorRoute from "./routes/image-compressor";
+import dropFolderRoute from "./routes/drop-folder";
+import morgan from "morgan";
+
 // Middleware to disable bodyParser for multipart form data
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
@@ -17,11 +15,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     express.json()(req, res, next);
   }
 });
-
+app.use(morgan("dev"));
 app.use("/processed", express.static(path.join(__dirname, "processed")));
 
 app.use(cors());
 app.use("/api/image-compressor", imageCompressorRoute);
+app.use("/api/drop-folder", dropFolderRoute);
 app.get("/", (req, res) => {
   res.status(200).send("Image Tools API");
 });

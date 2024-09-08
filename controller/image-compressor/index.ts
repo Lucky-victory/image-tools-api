@@ -5,71 +5,66 @@ import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
 import { v4 as uuid } from "uuid";
-import { generateImageUrl } from "../../utils"; // Adjust the import path
+import { generateImageUrl, generateUniqueImageId } from "../../utils"; // Adjust the import path
 import { PORT } from "../..";
 import { ProcessedImage } from "../../types";
 import { createReadStream } from "fs";
 import JSZip from "jszip";
-export class ImageCompressorController {
-  static processImage = async (
-    file: FormidableFile,
-    format: string,
-    quality: number,
-    width: number | undefined,
-    height: number | undefined,
-    outputDir: string,
-    id: string,
-    req: Request
-  ): Promise<ProcessedImage> => {
-    const imageBuffer = await fs.readFile(file.filepath);
-    const originalSize = imageBuffer.length;
-    let sharpImage = sharp(imageBuffer);
+async function processImage(
+  file: FormidableFile,
+  format: string,
+  quality: number,
+  width: number | undefined,
+  height: number | undefined,
+  outputDir: string,
+  id: string,
+  req: Request
+): Promise<ProcessedImage> {
+  const imageBuffer = await fs.readFile(file.filepath);
+  const originalSize = imageBuffer.length;
+  let sharpImage = sharp(imageBuffer);
 
-    if (width || height) {
-      sharpImage = sharpImage.resize(width, height);
-    }
+  if (width || height) {
+    sharpImage = sharpImage.resize(width, height);
+  }
 
-    switch (format.toLowerCase()) {
-      case "jpeg":
-      case "jpg":
-        sharpImage = sharpImage.jpeg({ quality });
-        break;
-      case "png":
-        sharpImage = sharpImage.png({ quality });
-        break;
-      case "webp":
-        sharpImage = sharpImage.webp({ quality });
-        break;
-      default:
-        throw new Error("Unsupported format");
-    }
+  switch (format.toLowerCase()) {
+    case "jpeg":
+    case "jpg":
+      sharpImage = sharpImage.jpeg({ quality });
+      break;
+    case "png":
+      sharpImage = sharpImage.png({ quality });
+      break;
+    case "webp":
+      sharpImage = sharpImage.webp({ quality });
+      break;
+    default:
+      throw new Error("Unsupported format");
+  }
 
-    const outputFilename = `compressed-${file.originalFilename?.replace(
-      /\.[^/.]+$/,
-      ""
-    )}.${format}`;
-    const outputPath = path.join(outputDir, outputFilename);
-    await sharpImage.toFile(outputPath);
+  const outputFilename = `${generateUniqueImageId()}-${file.originalFilename?.replace(
+    /\.[^/.]+$/,
+    ""
+  )}.${format}`;
+  const outputPath = path.join(outputDir, outputFilename);
+  await sharpImage.toFile(outputPath);
 
-    const newSize = (await fs.stat(outputPath)).size;
+  const newSize = (await fs.stat(outputPath)).size;
 
-    // Generate the full URL for the processed image
-    const url = generateImageUrl(
-      req,
-      `/processed/${id}/${outputFilename}`,
-      PORT
-    );
+  // Generate the full URL for the processed image
+  const url = generateImageUrl(req, `/processed/${id}/${outputFilename}`, PORT);
 
-    return {
-      filename: outputFilename,
-      originalFilename: file.originalFilename as string,
-      format,
-      originalSize,
-      newSize,
-      url,
-    };
+  return {
+    filename: outputFilename,
+    originalFilename: file.originalFilename as string,
+    format,
+    originalSize,
+    newSize,
+    url,
   };
-
+}
+export class ImageCompressorController {
   static async resizeImage() {}
   static async handleDownloadImageRoute(
     req: Request,
@@ -126,7 +121,7 @@ export class ImageCompressorController {
     next: NextFunction
   ) {
     const zip = new JSZip();
-    const { id } = req.params;
+    const { id } = req.query;
 
     // Validate query parameter
     if (typeof id !== "string") {
@@ -180,9 +175,7 @@ export class ImageCompressorController {
         const imageFiles = Array.isArray(files.image)
           ? files.image
           : [files.image];
-        const validImageFiles = imageFiles.filter(
-          (file): file is FormidableFile => file !== undefined
-        );
+        const validImageFiles = imageFiles.filter((file) => file !== undefined);
         if (!validImageFiles.length) {
           return res.status(400).json({ error: "No image files provided" });
         }
@@ -197,10 +190,10 @@ export class ImageCompressorController {
         const outputDir = path.join(processedDir, id);
 
         await fs.mkdir(outputDir, { recursive: true });
-
+        const _this = this;
         const processedImages = await Promise.all(
           validImageFiles.map((file: FormidableFile) =>
-            this.processImage(
+            processImage(
               file,
               format,
               quality,
