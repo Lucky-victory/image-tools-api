@@ -22,6 +22,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Logging with Morgan
 app.use(morgan("dev"));
 
+app.use(cors({ preflightContinue: true }));
 const analyticsMiddleware = initializeAnalytics({
   logFilePrefix: "api-analytics",
   rotationInterval: "1h",
@@ -38,16 +39,12 @@ app.use("/processed", express.static(path.join(__dirname, "processed")));
 app.disable("x-powered-by");
 
 // Enable CORS for all routes
-app.use(cors());
 
 // Serving static files from the 'processed' directory
 app.use("/processed", express.static(path.join(__dirname, "processed")));
 
 // Hide the X-Powered-By header
 app.disable("x-powered-by");
-
-// Enable CORS for all routes
-app.use(cors());
 
 // Routes for image compression and file handling
 app.use("/api/image-compressor", imageCompressorRoute);
