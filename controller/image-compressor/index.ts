@@ -6,7 +6,7 @@ import fs from "fs/promises";
 import path from "path";
 import { v4 as uuid } from "uuid";
 import { generateImageUrl, generateUniqueImageId } from "../../utils"; // Adjust the import path
-import { PORT } from "../..";
+import { PORT } from "../../index";
 import { ProcessedImage } from "../../types";
 import { createReadStream } from "fs";
 import JSZip from "jszip";
@@ -143,6 +143,7 @@ export class ImageCompressorController {
       const content = await zip.generateAsync({ type: "nodebuffer" });
       res.setHeader("Content-Type", "application/zip");
       res.setHeader("Content-Disposition", `attachment; filename="${id}.zip"`);
+      res.setHeader("Content-Length", content.length);
       res.status(200).send(content);
     } catch (error: any) {
       console.error("Failed to create ZIP file:", error);

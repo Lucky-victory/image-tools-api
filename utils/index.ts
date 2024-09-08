@@ -2,7 +2,9 @@ import { Request } from "express";
 import { SnowflakeIdGenerator } from "@green-auth/snowflake-unique-id";
 
 const generator = new SnowflakeIdGenerator({
-    nodeId:12,nodeBits:16,sequenceBits:16,
+  nodeId: 12,
+  nodeBits: 16,
+  sequenceBits: 16,
 });
 const generateImageUrl = (
   req: Request,
@@ -17,7 +19,7 @@ const generateImageUrl = (
   return `${reqProtocol}://${host}${imagePath}`;
 };
 
-const generateUniqueImageId = (len=12): string => {
+const generateUniqueImageId = (len = 12): string => {
   return generator.urlSafeId().substring(-1, len);
 };
-export { generateImageUrl,generateUniqueImageId };
+export { generateImageUrl, generateUniqueImageId };

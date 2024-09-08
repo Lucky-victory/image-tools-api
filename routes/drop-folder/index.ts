@@ -2,7 +2,7 @@ import { Router } from "express";
 import fs from "fs/promises";
 import path from "path";
 const router = Router();
-
+// router.use(asyncHandler(logAnalytics));
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 

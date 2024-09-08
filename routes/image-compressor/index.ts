@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { ImageCompressorController } from "../../controller/image-compressor";
-
 const router = Router();
+
+// router.use(asyncHandler(logAnalytics));
 router.post("/", ImageCompressorController.handleCompressorRoute);
 router.get(
   "/download-file",

@@ -2,7 +2,6 @@
   "name": "image-tools",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "tsc",
@@ -18,6 +17,7 @@
     "@types/mime-types": "^2.1.4",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.5.4",
+    "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^10.0.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4",
@@ -28,10 +28,13 @@
     "@green-auth/snowflake-unique-id": "^1.0.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
     "formidable": "^3.5.1",
     "jszip": "^3.10.1",
     "mime-types": "^2.1.35",
+    "rotating-file-stream": "^3.2.3",
     "sharp": "^0.33.5",
+    "ua-parser-js": "^1.0.38",
     "uuid": "^10.0.0"
   }
 }
