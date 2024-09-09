@@ -19,7 +19,7 @@ const generateImageUrl = (
   return `${reqProtocol}://${host}${imagePath}`;
 };
 
-const generateUniqueImageId = (len = 12): string => {
-  return generator.urlSafeId().substring(-1, len);
+const generateUniqueImageId = (len = 10): string => {
+  return generator.urlSafeId(len);
 };
 export { generateImageUrl, generateUniqueImageId };

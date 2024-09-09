@@ -53,7 +53,7 @@ async function processImage(
   const newSize = (await fs.stat(outputPath)).size;
 
   // Generate the full URL for the processed image
-  const url = generateImageUrl(req, `/processed/${id}/${outputFilename}`, PORT);
+  const url = generateImageUrl(req, `/${id}/${outputFilename}`, PORT);
 
   return {
     filename: outputFilename,
