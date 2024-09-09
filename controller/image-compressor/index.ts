@@ -81,12 +81,7 @@ export class ImageCompressorController {
           .json({ error: "Missing filename or processId query parameters" });
       }
 
-      const filePath = path.join(
-        process.cwd(),
-        "processed",
-        processId,
-        filename
-      );
+      const filePath = path.join(process.cwd(), "public", processId, filename);
 
       const fileStat = await getFileStats(filePath);
 
@@ -128,7 +123,7 @@ export class ImageCompressorController {
       return res.status(400).json({ error: "Missing or invalid id parameter" });
     }
 
-    const folderPath = path.join("processed", id);
+    const folderPath = path.join("public", id);
 
     try {
       const files = await getFilesInFolder(folderPath);
@@ -166,7 +161,7 @@ export class ImageCompressorController {
       }
 
       try {
-        const { q, w, h, f } = fields as {
+        const { q, w, h, f } = req.query as {
           q?: string;
           w?: string;
           h?: string;
@@ -187,7 +182,7 @@ export class ImageCompressorController {
         const height = h ? parseInt(h) : undefined;
 
         const id = uuid();
-        const processedDir = path.join(process.cwd(), "processed");
+        const processedDir = path.join(process.cwd(), "public");
         const outputDir = path.join(processedDir, id);
 
         await fs.mkdir(outputDir, { recursive: true });

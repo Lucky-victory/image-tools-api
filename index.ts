@@ -32,16 +32,13 @@ const analyticsMiddleware = initializeAnalytics({
 
 app.use(analyticsMiddleware);
 
-// Serving static files from the 'processed' directory
-app.use("/processed", express.static(path.join(__dirname, "processed")));
+// Serving static files from the 'public' directory
+app.use("/processed", express.static(path.join(__dirname, "public")));
 
 // Hide the X-Powered-By header
 app.disable("x-powered-by");
 
 // Enable CORS for all routes
-
-// Serving static files from the 'processed' directory
-app.use("/processed", express.static(path.join(__dirname, "processed")));
 
 // Hide the X-Powered-By header
 app.disable("x-powered-by");

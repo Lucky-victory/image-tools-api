@@ -6,7 +6,7 @@ const router = Router();
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  const folderPath = path.join(process.cwd(), "processed", id as string);
+  const folderPath = path.join(process.cwd(), "public", id as string);
 
   try {
     // Check if the folder exists
