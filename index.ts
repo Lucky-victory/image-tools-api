@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import cors from "cors";
-import fs from "fs/promises";
 import morgan from "morgan";
 import imageCompressorRoute from "./routes/image-compressor";
 import dropFolderRoute from "./routes/drop-folder";
@@ -34,11 +33,6 @@ app.use(analyticsMiddleware);
 
 // Serving static files from the 'public' directory
 app.use("/processed", express.static(path.join(__dirname, "public")));
-
-// Hide the X-Powered-By header
-app.disable("x-powered-by");
-
-// Enable CORS for all routes
 
 // Hide the X-Powered-By header
 app.disable("x-powered-by");
