@@ -2,10 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { UAParser } from "ua-parser-js";
 import fs from "fs/promises";
 import path from "path";
-import { createStream } from "rotating-file-stream";
+import geoip from "geoip-lite";
 
+import { createStream } from "rotating-file-stream";
 interface AnalyticsData {
   ip: string;
+  country: string;
   origin: string;
   referer: string;
   userAgent: {
@@ -17,7 +19,6 @@ interface AnalyticsData {
   path: string;
   method: string;
 }
-
 interface AnalyticsConfig {
   logDir: string;
   logFilePrefix: string;
@@ -62,9 +63,12 @@ export function initializeAnalytics(config: Partial<AnalyticsConfig> = {}) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const uaParser = new UAParser(req.headers["user-agent"]);
+      const ip = req.ip || req.socket.remoteAddress || "";
+      const geo = geoip.lookup(ip);
 
       const analyticsData: AnalyticsData = {
-        ip: req.ip || req.socket.remoteAddress || "",
+        ip: ip,
+        country: geo ? geo.country : "Unknown",
         origin: req.get("origin") || "",
         referer: req.get("referer") || "",
         userAgent: {
@@ -76,7 +80,6 @@ export function initializeAnalytics(config: Partial<AnalyticsConfig> = {}) {
         path: req.path,
         method: req.method,
       };
-
       // Log to file
       rotatingLogStream.write(JSON.stringify(analyticsData) + "\n");
 
